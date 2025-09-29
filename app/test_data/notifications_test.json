@@ -1,0 +1,144 @@
+{
+  "notifications": [
+    {
+      "name": "Get Notifications",
+      "method": "GET",
+      "url": "{{base_url}}/notifications/",
+      "headers": {
+        "Authorization": "Bearer {{access_token}}"
+      },
+      "description": "Get user notifications with badges",
+      "expected_response": {
+        "notifications": [],
+        "unread_count": 0,
+        "total_count": 0
+      }
+    },
+    {
+      "name": "Create Notification",
+      "method": "POST",
+      "url": "{{base_url}}/notifications/create",
+      "headers": {
+        "Authorization": "Bearer {{access_token}}",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "title": "Test Notification",
+        "message": "This is a test notification",
+        "type": "health",
+        "severity": "info"
+      },
+      "description": "Create a new notification (for testing)",
+      "expected_response": {
+        "id": 1,
+        "user_id": "{{user_id}}",
+        "title": "Test Notification",
+        "message": "This is a test notification",
+        "notification_type": "health",
+        "severity": "info",
+        "is_read": false,
+        "read_at": null,
+        "created_at": "2025-08-10T15:23:54.719187"
+      }
+    },
+    {
+      "name": "Mark Notifications Read",
+      "method": "POST",
+      "url": "{{base_url}}/notifications/mark-read",
+      "headers": {
+        "Authorization": "Bearer {{access_token}}",
+        "Content-Type": "application/json"
+      },
+      "body": [1],
+      "description": "Mark notifications as read",
+      "expected_response": {
+        "message": "Marked 1 notifications as read",
+        "updated_count": 1
+      }
+    },
+    {
+      "name": "Get Notification Settings",
+      "method": "GET",
+      "url": "{{base_url}}/notifications/settings",
+      "headers": {
+        "Authorization": "Bearer {{access_token}}"
+      },
+      "description": "Get user notification settings",
+      "expected_response": {
+        "health_alerts": true,
+        "family_updates": true,
+        "goal_achievements": true,
+        "device_alerts": true,
+        "emergency_alerts": true,
+        "daily_summary": true,
+        "weekly_report": true,
+        "push_notifications": true,
+        "email_notifications": false,
+        "sms_notifications": false
+      }
+    },
+    {
+      "name": "Update Notification Settings",
+      "method": "PATCH",
+      "url": "{{base_url}}/notifications/settings",
+      "headers": {
+        "Authorization": "Bearer {{access_token}}",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "health_alerts": true,
+        "family_updates": false,
+        "goal_achievements": true,
+        "device_alerts": true,
+        "emergency_alerts": true,
+        "daily_summary": false,
+        "weekly_report": true,
+        "push_notifications": true,
+        "email_notifications": false,
+        "sms_notifications": false
+      },
+      "description": "Update user notification settings",
+      "expected_response": {
+        "message": "Notification settings updated successfully",
+        "settings": {
+          "health_alerts": true,
+          "family_updates": false,
+          "goal_achievements": true,
+          "device_alerts": true,
+          "emergency_alerts": true,
+          "daily_summary": false,
+          "weekly_report": true,
+          "push_notifications": true,
+          "email_notifications": false,
+          "sms_notifications": false
+        }
+      }
+    },
+    {
+      "name": "Get Unread Count",
+      "method": "GET",
+      "url": "{{base_url}}/notifications/unread-count",
+      "headers": {
+        "Authorization": "Bearer {{access_token}}"
+      },
+      "description": "Get count of unread notifications",
+      "expected_response": {
+        "unread_count": 0,
+        "timestamp": "2025-08-10T15:24:00.000000"
+      }
+    },
+    {
+      "name": "Delete Notification",
+      "method": "DELETE",
+      "url": "{{base_url}}/notifications/1",
+      "headers": {
+        "Authorization": "Bearer {{access_token}}"
+      },
+      "description": "Delete a specific notification",
+      "expected_response": {
+        "message": "Notification deleted successfully",
+        "deleted_id": 1
+      }
+    }
+  ]
+} 

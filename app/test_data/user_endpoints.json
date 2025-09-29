@@ -1,0 +1,132 @@
+{
+  "user_endpoints": {
+    "get_current_user": {
+      "url": "GET /user/me",
+      "description": "Get current user profile",
+      "test_cases": [
+        {
+          "name": "Get Current User Success",
+          "method": "GET",
+          "url": "http://localhost:8001/user/me",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "email": "patient@example.com",
+            "phone_number": "+1234567890",
+            "name": "John Patient",
+            "role": "patient",
+            "language": "EN",
+            "is_phone_verified": false,
+            "is_email_verified": false,
+            "created_at": "string"
+          }
+        },
+        {
+          "name": "Unauthorized Error",
+          "method": "GET",
+          "url": "http://localhost:8001/user/me",
+          "headers": {},
+          "expected_status": 401,
+          "expected_response": {
+            "detail": "Not authenticated"
+          }
+        },
+        {
+          "name": "Invalid Token Error",
+          "method": "GET",
+          "url": "http://localhost:8001/user/me",
+          "headers": {
+            "Authorization": "Bearer invalid_token"
+          },
+          "expected_status": 401,
+          "expected_response": {
+            "detail": "Could not validate credentials"
+          }
+        }
+      ]
+    },
+    "update_user_profile": {
+      "url": "PATCH /user/profile",
+      "description": "Update current user profile",
+      "test_cases": [
+        {
+          "name": "Update User Profile Success",
+          "method": "PATCH",
+          "url": "http://localhost:8001/user/profile",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "name": "John Updated Patient",
+            "phone_number": "+1234567891",
+            "language": "AR"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "email": "patient@example.com",
+            "phone_number": "+1234567891",
+            "name": "John Updated Patient",
+            "role": "patient",
+            "language": "AR",
+            "is_phone_verified": false,
+            "is_email_verified": false,
+            "created_at": "string"
+          }
+        },
+        {
+          "name": "Update Name Only",
+          "method": "PATCH",
+          "url": "http://localhost:8001/user/profile",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "name": "John Smith"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "name": "John Smith"
+          }
+        },
+        {
+          "name": "Update Phone Number Only",
+          "method": "PATCH",
+          "url": "http://localhost:8001/user/profile",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "phone_number": "+1234567892"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "phone_number": "+1234567892"
+          }
+        },
+        {
+          "name": "Update Language Only",
+          "method": "PATCH",
+          "url": "http://localhost:8001/user/profile",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "language": "EN"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "language": "EN"
+          }
+        }
+      ]
+    }
+  }
+} 

@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.log
+.env
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Terraform
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.*
+**/*.tfstate
+**/*.tfstate.*
+
+# Ansible
+*.retry
+
+# MacOS
+.DS_Store
+
+# Docker
+*.tar
+EOL

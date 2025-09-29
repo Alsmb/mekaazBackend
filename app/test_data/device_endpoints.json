@@ -1,0 +1,174 @@
+{
+  "device_endpoints": {
+    "connect_device": {
+      "url": "POST /devices/connect",
+      "description": "Connect a device to user",
+      "test_cases": [
+        {
+          "name": "Connect Heart Monitor Success",
+          "method": "POST",
+          "url": "http://localhost:8001/devices/connect",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "device_id": "heart_monitor_001",
+            "device_type": "heart_monitor",
+            "device_name": "My Heart Monitor"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "device_type": "heart_monitor",
+            "device_id": "heart_monitor_001",
+            "device_name": "My Heart Monitor",
+            "is_connected": true,
+            "last_connected": "string",
+            "created_at": "string"
+          }
+        },
+        {
+          "name": "Connect ECG Device Success",
+          "method": "POST",
+          "url": "http://localhost:8001/devices/connect",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "device_id": "ecg_device_001",
+            "device_type": "ecg_device",
+            "device_name": "My ECG Device"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Device Already Connected Error",
+          "method": "POST",
+          "url": "http://localhost:8001/devices/connect",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "device_id": "heart_monitor_001",
+            "device_type": "heart_monitor",
+            "device_name": "Duplicate Device"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Device already connected"
+          }
+        }
+      ]
+    },
+    "get_available_devices": {
+      "url": "GET /devices/available",
+      "description": "Get list of available devices for user",
+      "test_cases": [
+        {
+          "name": "Get Available Devices Success",
+          "method": "GET",
+          "url": "http://localhost:8001/devices/available",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "devices": [
+              {
+                "id": "string",
+                "user_id": "string",
+                "device_type": "heart_monitor",
+                "device_id": "heart_monitor_001",
+                "device_name": "My Heart Monitor",
+                "is_connected": true,
+                "last_connected": "string",
+                "created_at": "string"
+              },
+              {
+                "id": "string",
+                "user_id": "string",
+                "device_type": "ecg_device",
+                "device_id": "ecg_device_001",
+                "device_name": "My ECG Device",
+                "is_connected": true,
+                "last_connected": "string",
+                "created_at": "string"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "disconnect_device": {
+      "url": "DELETE /devices/{device_id}",
+      "description": "Disconnect a device",
+      "test_cases": [
+        {
+          "name": "Disconnect Device Success",
+          "method": "DELETE",
+          "url": "http://localhost:8001/devices/heart_monitor_001",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "message": "Device disconnected successfully"
+          }
+        },
+        {
+          "name": "Device Not Found Error",
+          "method": "DELETE",
+          "url": "http://localhost:8001/devices/nonexistent_device",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "Device not found"
+          }
+        }
+      ]
+    },
+    "get_device_status": {
+      "url": "GET /devices/{device_id}/status",
+      "description": "Get device connection status",
+      "test_cases": [
+        {
+          "name": "Get Device Status Success",
+          "method": "GET",
+          "url": "http://localhost:8001/devices/ecg_device_001/status",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "device_type": "ecg_device",
+            "device_id": "ecg_device_001",
+            "device_name": "My ECG Device",
+            "is_connected": true,
+            "last_connected": "string",
+            "created_at": "string"
+          }
+        },
+        {
+          "name": "Device Not Found Error",
+          "method": "GET",
+          "url": "http://localhost:8001/devices/nonexistent_device/status",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "Device not found"
+          }
+        }
+      ]
+    }
+  }
+} 

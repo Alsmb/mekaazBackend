@@ -1,0 +1,421 @@
+{
+  "family_endpoints": {
+    "create_family": {
+      "url": "POST /family/create",
+      "description": "Create a new family and generate invite code",
+      "test_cases": [
+        {
+          "name": "Create Family Success",
+          "method": "POST",
+          "url": "http://localhost:8001/family/create",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "family_name": "Smith Family"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "owner_id": "string",
+            "invite_code": "{{invite_code}}",
+            "family_name": "Smith Family",
+            "created_at": "string"
+          }
+        },
+        {
+          "name": "Create Family Without Name",
+          "method": "POST",
+          "url": "http://localhost:8001/family/create",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {},
+          "expected_status": 200,
+          "expected_response": {
+            "family_name": "My Family"
+          }
+        },
+        {
+          "name": "User Already Has Family Error",
+          "method": "POST",
+          "url": "http://localhost:8001/family/create",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "family_name": "Another Family"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "User already has a family"
+          }
+        }
+      ]
+    },
+    "join_family": {
+      "url": "POST /family/join",
+      "description": "Join a family using invite code",
+      "test_cases": [
+        {
+          "name": "Join Family Success",
+          "method": "POST",
+          "url": "http://localhost:8001/family/join",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "invite_code": "{{invite_code}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "owner_id": "string",
+            "invite_code": "{{invite_code}}",
+            "family_name": "string",
+            "created_at": "string"
+          }
+        },
+        {
+          "name": "Invalid Invite Code Error",
+          "method": "POST",
+          "url": "http://localhost:8001/family/join",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "invite_code": "INVALID"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "Invalid invite code"
+          }
+        },
+        {
+          "name": "Already Member Error",
+          "method": "POST",
+          "url": "http://localhost:8001/family/join",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "invite_code": "ABC12345"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Already a member of this family"
+          }
+        }
+      ]
+    },
+    "get_family_invite_code": {
+      "url": "GET /family/invite-code",
+      "description": "Get invite code for current user's family",
+      "test_cases": [
+        {
+          "name": "Get Invite Code Success",
+          "method": "GET",
+          "url": "http://localhost:8001/family/invite-code",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "invite_code": "string",
+            "family_name": "string"
+          }
+        },
+        {
+          "name": "No Family Found Error",
+          "method": "GET",
+          "url": "http://localhost:8001/family/invite-code",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "No family found"
+          }
+        }
+      ]
+    },
+    "get_family_members": {
+      "url": "GET /family/members",
+      "description": "Get all family members",
+      "test_cases": [
+        {
+          "name": "Get Family Members Success",
+          "method": "GET",
+          "url": "http://localhost:8001/family/members",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": [
+            {
+              "id": "string",
+              "member_id": "string",
+              "role": "owner",
+              "joined_at": "string",
+              "is_active": true,
+              "name": "John Patient",
+              "email": "patient@example.com"
+            },
+            {
+              "id": "string",
+              "member_id": "string",
+              "role": "member",
+              "joined_at": "string",
+              "is_active": true,
+              "name": "Sarah Family",
+              "email": "family@example.com"
+            }
+          ]
+        },
+        {
+          "name": "No Family Found Error",
+          "method": "GET",
+          "url": "http://localhost:8001/family/members",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "No family found"
+          }
+        }
+      ]
+    },
+    "remove_family_member": {
+      "url": "DELETE /family/members/{member_id}",
+      "description": "Remove a member from family (owner only)",
+      "test_cases": [
+        {
+          "name": "Remove Member Success",
+          "method": "DELETE",
+          "url": "http://localhost:8001/family/members/{{member_id}}",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "message": "Member removed successfully"
+          }
+        },
+        {
+          "name": "Member Not Found Error",
+          "method": "DELETE",
+          "url": "http://localhost:8001/family/members/nonexistent_id",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "Member not found"
+          }
+        },
+        {
+          "name": "Cannot Remove Owner Error",
+          "method": "DELETE",
+          "url": "http://localhost:8001/family/members/{{owner_id}}",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Cannot remove family owner"
+          }
+        }
+      ]
+    },
+    "get_member_health": {
+      "url": "GET /family/members/{member_id}/health",
+      "description": "Get health data for a family member (with sharing permissions)",
+      "test_cases": [
+        {
+          "name": "Get Member Health Success",
+          "method": "GET",
+          "url": "http://localhost:8001/family/members/{{member_id}}/health",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "member_id": "string",
+            "member_name": "Sarah Family",
+            "latest_vitals": {
+              "heart_rate": 75,
+              "spo2": 98.5,
+              "temperature": 36.8,
+              "steps": 1000,
+              "health_condition": "normal",
+              "is_anomaly": false,
+              "timestamp": "string"
+            },
+            "health_condition": "normal",
+            "last_updated": "string"
+          }
+        },
+        {
+          "name": "Member Not Found Error",
+          "method": "GET",
+          "url": "http://localhost:8001/family/members/nonexistent_id/health",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "Member not found in family"
+          }
+        },
+        {
+          "name": "Health Data Not Shared Error",
+          "method": "GET",
+          "url": "http://localhost:8001/family/members/{{member_id}}/health",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 403,
+          "expected_response": {
+            "detail": "Health data not shared"
+          }
+        }
+      ]
+    },
+    "update_sharing_settings": {
+      "url": "PATCH /family/sharing-settings",
+      "description": "Update family sharing settings",
+      "test_cases": [
+        {
+          "name": "Update Sharing Settings Success",
+          "method": "PATCH",
+          "url": "http://localhost:8001/family/sharing-settings",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "share_heart_rate": true,
+            "share_spo2": true,
+            "share_temperature": false,
+            "share_steps": true,
+            "share_blood_pressure": true,
+            "share_respiratory_rate": false,
+            "share_ecg": false,
+            "share_sos_alerts": true
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "family_id": "string",
+            "share_heart_rate": true,
+            "share_spo2": true,
+            "share_temperature": false,
+            "share_steps": true,
+            "share_blood_pressure": true,
+            "share_respiratory_rate": false,
+            "share_ecg": false,
+            "share_sos_alerts": true,
+            "updated_at": "string"
+          }
+        }
+      ]
+    },
+    "emergency_contacts": {
+      "create_emergency_contact": {
+        "url": "POST /family/emergency-contacts",
+        "description": "Add emergency contact",
+        "test_cases": [
+          {
+            "name": "Create Emergency Contact Success",
+            "method": "POST",
+            "url": "http://localhost:8001/family/emergency-contacts",
+            "headers": {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer {{access_token}}"
+            },
+            "body": {
+              "name": "Emergency Contact",
+              "phone": "+1234567890",
+              "relationship": "spouse",
+              "is_primary": true
+            },
+            "expected_status": 200,
+            "expected_response": {
+              "id": "string",
+              "user_id": "string",
+              "name": "Emergency Contact",
+              "phone": "+1234567890",
+              "relationship": "spouse",
+              "is_primary": true,
+              "created_at": "string"
+            }
+          }
+        ]
+      },
+      "get_emergency_contacts": {
+        "url": "GET /family/emergency-contacts",
+        "description": "Get all emergency contacts for user",
+        "test_cases": [
+          {
+            "name": "Get Emergency Contacts Success",
+            "method": "GET",
+            "url": "http://localhost:8001/family/emergency-contacts",
+            "headers": {
+              "Authorization": "Bearer {{access_token}}"
+            },
+            "expected_status": 200,
+            "expected_response": [
+              {
+                "id": "string",
+                "user_id": "string",
+                "name": "Emergency Contact",
+                "phone": "+1234567890",
+                "relationship": "spouse",
+                "is_primary": true,
+                "created_at": "string"
+              }
+            ]
+          }
+        ]
+      },
+      "delete_emergency_contact": {
+        "url": "DELETE /family/emergency-contacts/{contact_id}",
+        "description": "Delete emergency contact",
+        "test_cases": [
+          {
+            "name": "Delete Emergency Contact Success",
+            "method": "DELETE",
+            "url": "http://localhost:8001/family/emergency-contacts/{{contact_id}}",
+            "headers": {
+              "Authorization": "Bearer {{access_token}}"
+            },
+            "expected_status": 200,
+            "expected_response": {
+              "message": "Emergency contact deleted successfully"
+            }
+          },
+          {
+            "name": "Contact Not Found Error",
+            "method": "DELETE",
+            "url": "http://localhost:8001/family/emergency-contacts/nonexistent_id",
+            "headers": {
+              "Authorization": "Bearer {{access_token}}"
+            },
+            "expected_status": 404,
+            "expected_response": {
+              "detail": "Emergency contact not found"
+            }
+          }
+        ]
+      }
+    }
+  }
+} 

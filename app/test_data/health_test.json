@@ -1,0 +1,206 @@
+{
+  "health_test": {
+    "description": "Test all health and vitals endpoints for the HealthMon app",
+    "base_url": "http://localhost:8001",
+    "auth_token": "YOUR_ACCESS_TOKEN_HERE",
+    "tests": [
+      {
+        "name": "Ingest Vital Data",
+        "method": "POST",
+        "endpoint": "/vitals/ingest",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "device_id": "heart_monitor_device",
+          "heart_rate": 75,
+          "spo2": 98.5,
+          "temperature": 36.8,
+          "steps": 2500,
+          "blood_pressure_systolic": 120,
+          "blood_pressure_diastolic": 80,
+          "respiratory_rate": 16
+        },
+        "expected_response": {
+          "id": "uuid-string",
+          "user_id": "uuid-string",
+          "device_id": "uuid-string",
+          "heart_rate": 75,
+          "spo2": 98.5,
+          "temperature": 36.8,
+          "steps": 2500,
+          "blood_pressure_systolic": 120,
+          "blood_pressure_diastolic": 80,
+          "respiratory_rate": 16,
+          "health_condition": "normal",
+          "is_anomaly": false,
+          "timestamp": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Get Live Vitals",
+        "method": "GET",
+        "endpoint": "/vitals/live",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "heart_rate": 75,
+          "spo2": 98.5,
+          "temperature": 36.8,
+          "steps": 2500,
+          "health_condition": "normal",
+          "is_anomaly": false,
+          "timestamp": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Get Vital History",
+        "method": "GET",
+        "endpoint": "/vitals/history?limit=10",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": [
+          {
+            "id": "uuid-string",
+            "user_id": "uuid-string",
+            "device_id": "uuid-string",
+            "heart_rate": 75,
+            "spo2": 98.5,
+            "temperature": 36.8,
+            "steps": 2500,
+            "blood_pressure_systolic": 120,
+            "blood_pressure_diastolic": 80,
+            "respiratory_rate": 16,
+            "health_condition": "normal",
+            "is_anomaly": false,
+            "timestamp": "2025-08-04T13:00:00.000000"
+          }
+        ]
+      },
+      {
+        "name": "Get Chart Data - Hour",
+        "method": "GET",
+        "endpoint": "/vitals/charts/hour",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "period": "hour",
+          "data": [
+            {
+              "heart_rate_avg": 75.2,
+              "heart_rate_min": 70,
+              "heart_rate_max": 80,
+              "spo2_avg": 98.5,
+              "spo2_min": 97.0,
+              "spo2_max": 99.0,
+              "temperature_avg": 36.8,
+              "temperature_min": 36.5,
+              "temperature_max": 37.0,
+              "steps_total": 2500,
+              "anomaly_count": 0,
+              "start_time": "2025-08-04T12:00:00.000000",
+              "end_time": "2025-08-04T13:00:00.000000"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Get Health Score",
+        "method": "GET",
+        "endpoint": "/vitals/health-score",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "score": 85,
+          "status": "Good",
+          "message": "Based on 10 recent readings"
+        }
+      },
+      {
+        "name": "Get Health Trends - Heart Rate",
+        "method": "GET",
+        "endpoint": "/vitals/trends/heart_rate?period=week",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "metric": "heart_rate",
+          "period": "week",
+          "average": 75.2,
+          "data_points": [
+            {
+              "timestamp": "2025-08-04T12:00:00.000000",
+              "value": 75
+            }
+          ],
+          "total_points": 168
+        }
+      },
+      {
+        "name": "Get Health Alerts",
+        "method": "GET",
+        "endpoint": "/vitals/alerts",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "alerts": [
+            {
+              "type": "heart_rate_high",
+              "title": "Elevated Heart Rate",
+              "message": "Heart rate was elevated: 110 bpm",
+              "value": "110 bpm",
+              "timestamp": "2025-08-04T12:30:00.000000",
+              "severity": "warning"
+            }
+          ],
+          "total_alerts": 1,
+          "unread_count": 1
+        }
+      },
+
+    ],
+    "curl_examples": [
+      {
+        "description": "Ingest vital data",
+        "command": "curl -X POST http://localhost:8001/vitals/ingest -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\" -H \"Content-Type: application/json\" -d '{\"device_id\": \"heart_monitor_device\", \"heart_rate\": 75, \"spo2\": 98.5, \"temperature\": 36.8, \"steps\": 2500}'"
+      },
+      {
+        "description": "Get live vitals",
+        "command": "curl -X GET http://localhost:8001/vitals/live -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get vital history",
+        "command": "curl -X GET \"http://localhost:8001/vitals/history?limit=10\" -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get chart data",
+        "command": "curl -X GET http://localhost:8001/vitals/charts/hour -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get health score",
+        "command": "curl -X GET http://localhost:8001/vitals/health-score -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get health trends",
+        "command": "curl -X GET \"http://localhost:8001/vitals/trends/heart_rate?period=week\" -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get health alerts",
+        "command": "curl -X GET http://localhost:8001/vitals/alerts -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+
+    ]
+  }
+} 

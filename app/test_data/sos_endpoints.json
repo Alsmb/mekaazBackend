@@ -1,0 +1,310 @@
+{
+  "sos_endpoints": {
+    "trigger_sos": {
+      "url": "POST /sos/trigger",
+      "description": "Trigger SOS emergency alert",
+      "test_cases": [
+        {
+          "name": "Trigger Medical SOS Success",
+          "method": "POST",
+          "url": "http://localhost:8001/sos/trigger",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "emergency_type": "medical",
+            "location_lat": "40.7128",
+            "location_lng": "-74.0060",
+            "location_address": "123 Main St, New York, NY",
+            "notes": "Feeling chest pain"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "status": "active",
+            "emergency_type": "medical",
+            "location_lat": "40.7128",
+            "location_lng": "-74.0060",
+            "location_address": "123 Main St, New York, NY",
+            "vital_data": "string",
+            "notes": "Feeling chest pain",
+            "triggered_at": "string",
+            "resolved_at": null,
+            "resolved_by": null
+          }
+        },
+        {
+          "name": "Trigger Fall SOS Success",
+          "method": "POST",
+          "url": "http://localhost:8001/sos/trigger",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "emergency_type": "fall",
+            "location_lat": "40.7128",
+            "location_lng": "-74.0060",
+            "location_address": "Home - Living Room",
+            "notes": "Fell and can't get up"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Trigger Cardiac SOS Success",
+          "method": "POST",
+          "url": "http://localhost:8001/sos/trigger",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "emergency_type": "cardiac",
+            "location_lat": "40.7128",
+            "location_lng": "-74.0060",
+            "location_address": "Home - Bedroom",
+            "notes": "Severe chest pain and shortness of breath"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Active SOS Already Exists Error",
+          "method": "POST",
+          "url": "http://localhost:8001/sos/trigger",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "emergency_type": "medical",
+            "notes": "Another emergency"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Active SOS alert already exists"
+          }
+        }
+      ]
+    },
+    "cancel_sos": {
+      "url": "POST /sos/cancel",
+      "description": "Cancel active SOS alert",
+      "test_cases": [
+        {
+          "name": "Cancel SOS Success",
+          "method": "POST",
+          "url": "http://localhost:8001/sos/cancel",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "reason": "False alarm, feeling better now"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "status": "cancelled",
+            "emergency_type": "medical",
+            "notes": "Cancelled: False alarm, feeling better now",
+            "triggered_at": "string",
+            "resolved_at": null,
+            "resolved_by": null
+          }
+        },
+        {
+          "name": "No Active SOS Error",
+          "method": "POST",
+          "url": "http://localhost:8001/sos/cancel",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "reason": "Trying to cancel when no active SOS"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "No active SOS alert found"
+          }
+        }
+      ]
+    },
+    "resolve_sos": {
+      "url": "POST /sos/{sos_id}/resolve",
+      "description": "Resolve SOS alert (for family members or emergency contacts)",
+      "test_cases": [
+        {
+          "name": "Resolve SOS Success",
+          "method": "POST",
+          "url": "http://localhost:8001/sos/{{sos_id}}/resolve",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "resolved_by": "family_member_id",
+            "resolution_notes": "Emergency services arrived and patient is stable"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "status": "resolved",
+            "emergency_type": "medical",
+            "notes": "Resolved: Emergency services arrived and patient is stable",
+            "triggered_at": "string",
+            "resolved_at": "string",
+            "resolved_by": "family_member_id"
+          }
+        },
+        {
+          "name": "SOS Not Found Error",
+          "method": "POST",
+          "url": "http://localhost:8001/sos/nonexistent_id/resolve",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "resolved_by": "family_member_id",
+            "resolution_notes": "Trying to resolve non-existent SOS"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "Active SOS alert not found"
+          }
+        }
+      ]
+    },
+    "get_sos_history": {
+      "url": "GET /sos/history",
+      "description": "Get SOS history for user",
+      "test_cases": [
+        {
+          "name": "Get SOS History Success",
+          "method": "GET",
+          "url": "http://localhost:8001/sos/history",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "sos_alerts": [
+              {
+                "id": "string",
+                "user_id": "string",
+                "status": "resolved",
+                "emergency_type": "medical",
+                "location_lat": "40.7128",
+                "location_lng": "-74.0060",
+                "location_address": "123 Main St, New York, NY",
+                "vital_data": "string",
+                "notes": "Feeling chest pain",
+                "triggered_at": "string",
+                "resolved_at": "string",
+                "resolved_by": "string"
+              },
+              {
+                "id": "string",
+                "user_id": "string",
+                "status": "cancelled",
+                "emergency_type": "fall",
+                "location_lat": "40.7128",
+                "location_lng": "-74.0060",
+                "location_address": "Home - Living Room",
+                "vital_data": "string",
+                "notes": "Cancelled: False alarm, feeling better now",
+                "triggered_at": "string",
+                "resolved_at": null,
+                "resolved_by": null
+              }
+            ],
+            "total_count": 2
+          }
+        },
+        {
+          "name": "Get SOS History with Limit",
+          "method": "GET",
+          "url": "http://localhost:8001/sos/history?limit=10",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200
+        }
+      ]
+    },
+    "get_active_sos": {
+      "url": "GET /sos/active",
+      "description": "Get active SOS alert for user",
+      "test_cases": [
+        {
+          "name": "Get Active SOS Success",
+          "method": "GET",
+          "url": "http://localhost:8001/sos/active",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "status": "active",
+            "emergency_type": "medical",
+            "location_lat": "40.7128",
+            "location_lng": "-74.0060",
+            "location_address": "123 Main St, New York, NY",
+            "vital_data": "string",
+            "notes": "Feeling chest pain",
+            "triggered_at": "string",
+            "resolved_at": null,
+            "resolved_by": null
+          }
+        },
+        {
+          "name": "No Active SOS Error",
+          "method": "GET",
+          "url": "http://localhost:8001/sos/active",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "No active SOS alert found"
+          }
+        }
+      ]
+    },
+    "get_sos_notifications": {
+      "url": "GET /sos/{sos_id}/notifications",
+      "description": "Get notifications sent for a specific SOS alert",
+      "test_cases": [
+        {
+          "name": "Get SOS Notifications Success",
+          "method": "GET",
+          "url": "http://localhost:8001/sos/{{sos_id}}/notifications",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": [
+            {
+              "id": "string",
+              "sos_id": "string",
+              "contact_id": "string",
+              "notification_type": "sms",
+              "sent_at": "string",
+              "delivered": true,
+              "delivered_at": "string",
+              "response_received": false,
+              "response_at": null
+            }
+          ]
+        }
+      ]
+    }
+  }
+} 

@@ -1,0 +1,1279 @@
+{
+  "info": {
+    "name": "Mekaaz API Collection",
+    "description": "Complete API collection for Mekaaz health monitoring backend",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8001",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "device_id",
+      "value": "Mekaaz-1001",
+      "type": "string"
+    },
+    {
+      "key": "ecg_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "family_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sos_id",
+      "value": "",
+      "type": "string"
+    },
+
+    {
+      "key": "notification_id",
+      "value": "1",
+      "type": "number"
+    },
+    {
+      "key": "invite_id",
+      "value": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"patient@example.com\",\n  \"password\": \"securepassword123\",\n  \"name\": \"John Patient\",\n  \"role\": \"patient\",\n  \"phone_number\": \"+1234567890\",\n  \"language\": \"EN\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "signup"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('access_token', response.access_token);",
+                  "    pm.environment.set('refresh_token', response.refresh_token);",
+                  "    pm.environment.set('user_id', response.user_id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"patient@example.com\",\n  \"password\": \"securepassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('access_token', response.access_token);",
+                  "    pm.environment.set('refresh_token', response.refresh_token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Send Email OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"patient@example.com\",\n  \"otp_type\": \"email\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/send-otp",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "send-otp"]
+            }
+          }
+        },
+        {
+          "name": "Verify Email OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"patient@example.com\",\n  \"otp_code\": \"123456\",\n  \"otp_type\": \"email\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/verify-otp",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "verify-otp"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/user/me",
+              "host": ["{{base_url}}"],
+              "path": ["user", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Updated Patient\",\n  \"phone_number\": \"+1234567891\",\n  \"language\": \"AR\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/user/profile",
+              "host": ["{{base_url}}"],
+              "path": ["user", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Device Management",
+      "item": [
+        {
+          "name": "Connect Device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_id\": \"{{device_id}}\",\n  \"device_type\": \"heart_monitor\",\n  \"device_name\": \"My Heart Monitor\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices/connect",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "connect"]
+            }
+          }
+        },
+        {
+          "name": "Get Available Devices",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/devices/available",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "available"]
+            }
+          }
+        },
+        {
+          "name": "Get Device Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Disconnect Device",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Discover Bluetooth Devices",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/devices/discover",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "discover"]
+            }
+          }
+        },
+        {
+          "name": "Get Device Signal Strength",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/signal-strength",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "signal-strength"]
+            }
+          }
+        },
+        {
+          "name": "Get Device Battery Level",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/battery",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "battery"]
+            }
+          }
+        },
+        {
+          "name": "Pair Bluetooth Device",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/pair",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "pair"]
+            }
+          }
+        },
+        {
+          "name": "Get Device Firmware",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/firmware",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "firmware"]
+            }
+          }
+        },
+        {
+          "name": "Update Device Firmware",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"update_type\": \"firmware\",\n  \"version\": \"1.2.4\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/update",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "update"]
+            }
+          }
+        },
+        {
+          "name": "Get Device Calibration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/calibration",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "calibration"]
+            }
+          }
+        },
+        {
+          "name": "Calibrate Device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sensors\": [\"heart_rate\", \"spo2\", \"temperature\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/devices/{{device_id}}/calibrate",
+              "host": ["{{base_url}}"],
+              "path": ["devices", "{{device_id}}", "calibrate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health & Vitals",
+      "item": [
+        {
+          "name": "Ingest Vital Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_id\": \"{{device_id}}\",\n  \"heart_rate\": 75,\n  \"spo2\": 98.5,\n  \"temperature\": 36.8,\n  \"steps\": 1000,\n  \"blood_pressure_systolic\": 120,\n  \"blood_pressure_diastolic\": 80,\n  \"respiratory_rate\": 16\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/vitals/ingest",
+              "host": ["{{base_url}}"],
+              "path": ["vitals", "ingest"]
+            }
+          }
+        },
+        {
+          "name": "Get Live Vitals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vitals/live",
+              "host": ["{{base_url}}"],
+              "path": ["vitals", "live"]
+            }
+          }
+        },
+        {
+          "name": "Get Vital History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vitals/history?limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["vitals", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Hour Chart Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vitals/charts/hour",
+              "host": ["{{base_url}}"],
+              "path": ["vitals", "charts", "hour"]
+            }
+          }
+        },
+        {
+          "name": "Get Day Chart Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vitals/charts/day",
+              "host": ["{{base_url}}"],
+              "path": ["vitals", "charts", "day"]
+            }
+          }
+        },
+        {
+          "name": "Get Week Chart Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vitals/charts/week",
+              "host": ["{{base_url}}"],
+              "path": ["vitals", "charts", "week"]
+            }
+          }
+        },
+        {
+          "name": "Get Health Score",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vitals/health-score",
+              "host": ["{{base_url}}"],
+              "path": ["vitals", "health-score"]
+            }
+          }
+        },
+        {
+          "name": "Get Health Trends",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vitals/trends/heart_rate?period=week",
+              "host": ["{{base_url}}"],
+              "path": ["vitals", "trends", "heart_rate"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "week"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Health Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vitals/alerts",
+              "host": ["{{base_url}}"],
+              "path": ["vitals", "alerts"]
+            }
+          }
+        },
+
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Health Insights",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/health-insights",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "health-insights"]
+            }
+          }
+        },
+        {
+          "name": "Detect Anomalies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/anomaly-detection",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "anomaly-detection"]
+            }
+          }
+        },
+        {
+          "name": "Create Custom Alert",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alert_type\": \"heart_rate_high\",\n  \"threshold\": 100,\n  \"enabled\": true,\n  \"notification_type\": \"push\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/analytics/custom-alerts",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "custom-alerts"]
+            }
+          }
+        },
+        {
+          "name": "Analyze Health Patterns",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/health-patterns",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "health-patterns"]
+            }
+          }
+        },
+        {
+          "name": "Get Predictive Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/predictive-health",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "predictive-health"]
+            }
+          }
+        },
+        {
+          "name": "Compare Health Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/analytics/health-comparison?period=week",
+              "host": ["{{base_url}}"],
+              "path": ["analytics", "health-comparison"],
+              "query": [
+                {
+                  "key": "period",
+                  "value": "week"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["notifications"]
+            }
+          }
+        },
+        {
+          "name": "Mark Notifications as Read",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {{notification_id}},\n  2\n]"
+            },
+            "url": {
+              "raw": "{{base_url}}/notifications/mark-read",
+              "host": ["{{base_url}}"],
+              "path": ["notifications", "mark-read"]
+            }
+          }
+        },
+        {
+          "name": "Get Notification Settings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/notifications/settings",
+              "host": ["{{base_url}}"],
+              "path": ["notifications", "settings"]
+            }
+          }
+        },
+        {
+          "name": "Update Notification Settings",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"health_alerts\": true,\n  \"family_updates\": true,\n  \"goal_achievements\": true,\n  \"device_alerts\": true,\n  \"emergency_alerts\": true,\n  \"daily_summary\": true,\n  \"weekly_report\": true,\n  \"push_notifications\": true,\n  \"email_notifications\": false,\n  \"sms_notifications\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/notifications/settings",
+              "host": ["{{base_url}}"],
+              "path": ["notifications", "settings"]
+            }
+          }
+        },
+        {
+          "name": "Get Unread Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/notifications/unread-count",
+              "host": ["{{base_url}}"],
+              "path": ["notifications", "unread-count"]
+            }
+          }
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/notifications/{{notification_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["notifications", "{{notification_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Family Management",
+      "item": [
+        {
+          "name": "Create Family",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"family_name\": \"Smith Family\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/family/create",
+              "host": ["{{base_url}}"],
+              "path": ["family", "create"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('family_id', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Join Family",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"invite_code\": \"ABC12345\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/family/join",
+              "host": ["{{base_url}}"],
+              "path": ["family", "join"]
+            }
+          }
+        },
+        {
+          "name": "Get Family Members",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/family/members",
+              "host": ["{{base_url}}"],
+              "path": ["family", "members"]
+            }
+          }
+        },
+        {
+          "name": "Get Member Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/family/members/{{user_id}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["family", "members", "{{user_id}}", "health"]
+            }
+          }
+        },
+        {
+          "name": "Update Sharing Settings",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"share_heart_rate\": true,\n  \"share_spo2\": true,\n  \"share_temperature\": false,\n  \"share_steps\": true,\n  \"share_blood_pressure\": true,\n  \"share_respiratory_rate\": false,\n  \"share_ecg\": false,\n  \"share_sos_alerts\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/family/sharing-settings",
+              "host": ["{{base_url}}"],
+              "path": ["family", "sharing-settings"]
+            }
+          }
+        },
+        {
+          "name": "Create Emergency Contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Emergency Contact\",\n  \"phone\": \"+1234567890\",\n  \"relationship\": \"spouse\",\n  \"is_primary\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/family/emergency-contacts",
+              "host": ["{{base_url}}"],
+              "path": ["family", "emergency-contacts"]
+            }
+          }
+        },
+        {
+          "name": "Get Emergency Contacts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/family/emergency-contacts",
+              "host": ["{{base_url}}"],
+              "path": ["family", "emergency-contacts"]
+            }
+          }
+        },
+        {
+          "name": "Get Pending Invites",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/family/pending-invites",
+              "host": ["{{base_url}}"],
+              "path": ["family", "pending-invites"]
+            }
+          }
+        },
+        {
+          "name": "Accept Family Invite",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/family/invites/{{invite_id}}/accept",
+              "host": ["{{base_url}}"],
+              "path": ["family", "invites", "{{invite_id}}", "accept"]
+            }
+          }
+        },
+        {
+          "name": "Reject Family Invite",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/family/invites/{{invite_id}}/reject",
+              "host": ["{{base_url}}"],
+              "path": ["family", "invites", "{{invite_id}}", "reject"]
+            }
+          }
+        },
+        {
+          "name": "Get Family Health Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/family/health-summary",
+              "host": ["{{base_url}}"],
+              "path": ["family", "health-summary"]
+            }
+          }
+        },
+        {
+          "name": "Get Family Health Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/family/health-dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["family", "health-dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Family Health Comparison",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/family/health-comparison",
+              "host": ["{{base_url}}"],
+              "path": ["family", "health-comparison"]
+            }
+          }
+        },
+        {
+          "name": "Generate Family Health Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"report_type\": \"weekly\",\n  \"include_all_members\": true,\n  \"format\": \"pdf\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/family/health-reports",
+              "host": ["{{base_url}}"],
+              "path": ["family", "health-reports"]
+            }
+          }
+        },
+        {
+          "name": "Get Member Detailed Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/family/members/{{user_id}}/detailed-health",
+              "host": ["{{base_url}}"],
+              "path": ["family", "members", "{{user_id}}", "detailed-health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "SOS Emergency",
+      "item": [
+        {
+          "name": "Trigger SOS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"emergency_type\": \"medical\",\n  \"location_lat\": \"40.7128\",\n  \"location_lng\": \"-74.0060\",\n  \"location_address\": \"123 Main St, New York, NY\",\n  \"notes\": \"Feeling chest pain\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/sos/trigger",
+              "host": ["{{base_url}}"],
+              "path": ["sos", "trigger"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('sos_id', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Active SOS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/sos/active",
+              "host": ["{{base_url}}"],
+              "path": ["sos", "active"]
+            }
+          }
+        },
+        {
+          "name": "Cancel SOS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"False alarm, feeling better now\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/sos/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["sos", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Resolve SOS",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolved_by\": \"family_member_id\",\n  \"resolution_notes\": \"Emergency services arrived and patient is stable\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/sos/{{sos_id}}/resolve",
+              "host": ["{{base_url}}"],
+              "path": ["sos", "{{sos_id}}", "resolve"]
+            }
+          }
+        },
+        {
+          "name": "Get SOS History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/sos/history?limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["sos", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get SOS Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/sos/{{sos_id}}/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["sos", "{{sos_id}}", "notifications"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ECG Recording",
+      "item": [
+        {
+          "name": "Start ECG Recording",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_id\": \"ecg_device_001\",\n  \"recording_duration\": \"30_seconds\",\n  \"session_type\": \"single_lead\",\n  \"lead_count\": 1,\n  \"sampling_rate\": 500,\n  \"resolution\": 12\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ecg/start",
+              "host": ["{{base_url}}"],
+              "path": ["ecg", "start"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('ecg_id', response.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update ECG Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ecg_id\": \"{{ecg_id}}\",\n  \"ecg_data\": {\n    \"readings\": [0.1, 0.2, 0.15, 0.3, 0.25, 0.4, 0.35, 0.5, 0.45, 0.6],\n    \"timestamp\": \"2024-01-01T12:00:00Z\",\n    \"quality\": \"good\",\n    \"signal_strength\": 0.8\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ecg/{{ecg_id}}/data",
+              "host": ["{{base_url}}"],
+              "path": ["ecg", "{{ecg_id}}", "data"]
+            }
+          }
+        },
+        {
+          "name": "Complete ECG Recording",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ecg_id\": \"{{ecg_id}}\",\n  \"final_data\": {\n    \"readings\": [0.1, 0.2, 0.15, 0.3, 0.25, 0.4, 0.35, 0.5, 0.45, 0.6, 0.55, 0.7, 0.65, 0.8, 0.75, 0.9],\n    \"timestamp\": \"2024-01-01T12:00:30Z\",\n    \"quality\": \"excellent\",\n    \"signal_strength\": 0.95,\n    \"total_readings\": 15000,\n    \"duration_seconds\": 30\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/ecg/{{ecg_id}}/complete",
+              "host": ["{{base_url}}"],
+              "path": ["ecg", "{{ecg_id}}", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Get ECG Recording",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ecg/{{ecg_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["ecg", "{{ecg_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get ECG History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ecg/history?limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["ecg", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Download ECG PDF",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ecg/{{ecg_id}}/download",
+              "host": ["{{base_url}}"],
+              "path": ["ecg", "{{ecg_id}}", "download"]
+            }
+          }
+        },
+        {
+          "name": "Analyze ECG Data",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/ecg/{{ecg_id}}/analyze",
+              "host": ["{{base_url}}"],
+              "path": ["ecg", "{{ecg_id}}", "analyze"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Root Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          }
+        }
+      ]
+    }
+  ]
+} 

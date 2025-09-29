@@ -1,0 +1,183 @@
+{
+  "otp_endpoints": {
+    "send_otp": {
+      "url": "POST /auth/send-otp",
+      "description": "Send OTP to email or phone",
+      "test_cases": [
+        {
+          "name": "Send Email OTP Success",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/send-otp",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "patient@example.com",
+            "otp_type": "email"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "message": "OTP sent to patient@example.com",
+            "expires_in": 600
+          }
+        },
+        {
+          "name": "Send Phone OTP Success",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/send-otp",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "phone_number": "+1234567890",
+            "otp_type": "phone"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "message": "OTP sent to +1234567890",
+            "expires_in": 600
+          }
+        },
+        {
+          "name": "Email Required for Email OTP Error",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/send-otp",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "otp_type": "email"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Email is required for email OTP"
+          }
+        },
+        {
+          "name": "Phone Required for Phone OTP Error",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/send-otp",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "otp_type": "phone"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Phone number is required for phone OTP"
+          }
+        },
+        {
+          "name": "User Not Found Error",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/send-otp",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "nonexistent@example.com",
+            "otp_type": "email"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "User not found"
+          }
+        }
+      ]
+    },
+    "verify_otp": {
+      "url": "POST /auth/verify-otp",
+      "description": "Verify OTP for email or phone",
+      "test_cases": [
+        {
+          "name": "Verify Email OTP Success",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/verify-otp",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "patient@example.com",
+            "otp_code": "123456",
+            "otp_type": "email"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "message": "Email verified successfully",
+            "is_verified": true
+          }
+        },
+        {
+          "name": "Verify Phone OTP Success",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/verify-otp",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "phone_number": "+1234567890",
+            "otp_code": "654321",
+            "otp_type": "phone"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "message": "Phone verified successfully",
+            "is_verified": true
+          }
+        },
+        {
+          "name": "Invalid OTP Error",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/verify-otp",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "patient@example.com",
+            "otp_code": "000000",
+            "otp_type": "email"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Invalid or expired OTP"
+          }
+        },
+        {
+          "name": "Expired OTP Error",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/verify-otp",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "patient@example.com",
+            "otp_code": "123456",
+            "otp_type": "email"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Invalid or expired OTP"
+          }
+        },
+        {
+          "name": "User Not Found Error",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/verify-otp",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "nonexistent@example.com",
+            "otp_code": "123456",
+            "otp_type": "email"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "User not found"
+          }
+        }
+      ]
+    }
+  }
+} 

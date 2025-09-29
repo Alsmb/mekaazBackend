@@ -1,0 +1,438 @@
+{
+  "family_test": {
+    "description": "Test all family management endpoints for the HealthMon app",
+    "base_url": "http://localhost:8001",
+    "auth_token": "YOUR_ACCESS_TOKEN_HERE",
+    "tests": [
+      {
+        "name": "Create Family",
+        "method": "POST",
+        "endpoint": "/family/create",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "family_name": "Smith Family"
+        },
+        "expected_response": {
+          "id": "uuid-string",
+          "owner_id": "uuid-string",
+          "invite_code": "ABCD1234",
+          "family_name": "Smith Family",
+          "created_at": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Get Family Invite Code",
+        "method": "GET",
+        "endpoint": "/family/invite-code",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "invite_code": "ABCD1234",
+          "family_name": "Smith Family"
+        }
+      },
+      {
+        "name": "Join Family",
+        "method": "POST",
+        "endpoint": "/family/join",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "invite_code": "ABCD1234"
+        },
+        "expected_response": {
+          "message": "Successfully joined family",
+          "family_id": "uuid-string",
+          "family_name": "Smith Family"
+        }
+      },
+      {
+        "name": "Get Family Members",
+        "method": "GET",
+        "endpoint": "/family/members",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": [
+          {
+            "member_id": "uuid-string",
+            "member_name": "John Smith",
+            "member_email": "john@example.com",
+            "member_role": "owner",
+            "joined_at": "2025-08-04T13:00:00.000000"
+          },
+          {
+            "member_id": "uuid-string-2",
+            "member_name": "Sarah Smith",
+            "member_email": "sarah@example.com",
+            "member_role": "member",
+            "joined_at": "2025-08-04T13:30:00.000000"
+          }
+        ]
+      },
+      {
+        "name": "Get Pending Invites",
+        "method": "GET",
+        "endpoint": "/family/pending-invites",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": [
+          {
+            "invite_id": "uuid-string",
+            "from_user": "John Smith",
+            "from_email": "john@example.com",
+            "family_name": "Smith Family",
+            "invited_at": "2025-08-04T13:00:00.000000",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "name": "Accept Family Invite",
+        "method": "POST",
+        "endpoint": "/family/invites/uuid-string/accept",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "message": "Invite accepted successfully",
+          "family_id": "uuid-string",
+          "family_name": "Smith Family"
+        }
+      },
+      {
+        "name": "Reject Family Invite",
+        "method": "POST",
+        "endpoint": "/family/invites/uuid-string/reject",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "message": "Invite rejected successfully"
+        }
+      },
+      {
+        "name": "Get Family Member Health",
+        "method": "GET",
+        "endpoint": "/family/members/uuid-string-2/health",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "member_name": "Sarah Smith",
+          "overall_status": "Healthy",
+          "issues": [],
+          "metrics": {
+            "heart_rate": {
+              "average": 75.2,
+              "min": 70,
+              "max": 80,
+              "status": "normal"
+            },
+            "spo2": {
+              "average": 98.5,
+              "min": 97.0,
+              "max": 99.0,
+              "status": "normal"
+            },
+            "temperature": {
+              "average": 36.8,
+              "min": 36.5,
+              "max": 37.0,
+              "status": "normal"
+            }
+          },
+          "data_points": 150,
+          "last_updated": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Get Family Health Dashboard",
+        "method": "GET",
+        "endpoint": "/family/health-dashboard",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "family_name": "Smith Family",
+          "total_members": 2,
+          "healthy_members": 2,
+          "members_health": [
+            {
+              "member_id": "uuid-string",
+              "member_name": "John Smith",
+              "health_status": "Healthy",
+              "latest_heart_rate": 75,
+              "latest_spo2": 98.5,
+              "latest_temperature": 36.8,
+              "last_updated": "2025-08-04T13:00:00.000000"
+            },
+            {
+              "member_id": "uuid-string-2",
+              "member_name": "Sarah Smith",
+              "health_status": "Healthy",
+              "latest_heart_rate": 72,
+              "latest_spo2": 99.0,
+              "latest_temperature": 36.5,
+              "last_updated": "2025-08-04T13:00:00.000000"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Get Family Health Comparison",
+        "method": "GET",
+        "endpoint": "/family/health-comparison",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "family_name": "Smith Family",
+          "comparison_period": "Last 7 days",
+          "metrics_comparison": {
+            "heart_rate": [
+              {
+                "member_name": "John Smith",
+                "average_heart_rate": 75.2,
+                "status": "normal"
+              },
+              {
+                "member_name": "Sarah Smith",
+                "average_heart_rate": 72.1,
+                "status": "normal"
+              }
+            ],
+            "spo2": [
+              {
+                "member_name": "John Smith",
+                "average_spo2": 98.5,
+                "status": "normal"
+              },
+              {
+                "member_name": "Sarah Smith",
+                "average_spo2": 99.0,
+                "status": "normal"
+              }
+            ],
+            "temperature": [
+              {
+                "member_name": "John Smith",
+                "average_temperature": 36.8,
+                "status": "normal"
+              },
+              {
+                "member_name": "Sarah Smith",
+                "average_temperature": 36.5,
+                "status": "normal"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Generate Family Health Report",
+        "method": "POST",
+        "endpoint": "/family/health-reports",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "period": "month",
+          "include_comparisons": true,
+          "include_recommendations": true
+        },
+        "expected_response": {
+          "family_name": "Smith Family",
+          "report_period": "month",
+          "generated_at": "2025-08-04T13:00:00.000000",
+          "summary": {
+            "total_members": 2,
+            "healthy_members": 2,
+            "members_needing_attention": 0
+          },
+          "member_reports": [
+            {
+              "member_name": "John Smith",
+              "overall_status": "Healthy",
+              "issues": [],
+              "metrics": {
+                "heart_rate": {
+                  "average": 75.2,
+                  "min": 70,
+                  "max": 80,
+                  "status": "normal"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Update Sharing Settings",
+        "method": "PATCH",
+        "endpoint": "/family/sharing-settings",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "share_heart_rate": true,
+          "share_spo2": true,
+          "share_temperature": true,
+          "share_steps": true,
+          "share_blood_pressure": true,
+          "share_respiratory_rate": true,
+          "share_ecg": false,
+          "share_sos_alerts": true
+        },
+        "expected_response": {
+          "message": "Sharing settings updated successfully",
+          "settings": {
+            "share_heart_rate": true,
+            "share_spo2": true,
+            "share_temperature": true,
+            "share_steps": true,
+            "share_blood_pressure": true,
+            "share_respiratory_rate": true,
+            "share_ecg": false,
+            "share_sos_alerts": true
+          }
+        }
+      },
+      {
+        "name": "Add Emergency Contact",
+        "method": "POST",
+        "endpoint": "/family/emergency-contacts",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "name": "Emergency Contact",
+          "phone": "+1234567890",
+          "relationship": "spouse",
+          "is_primary": true
+        },
+        "expected_response": {
+          "id": "uuid-string",
+          "user_id": "uuid-string",
+          "name": "Emergency Contact",
+          "phone": "+1234567890",
+          "relationship": "spouse",
+          "is_primary": true,
+          "created_at": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Get Emergency Contacts",
+        "method": "GET",
+        "endpoint": "/family/emergency-contacts",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": [
+          {
+            "id": "uuid-string",
+            "user_id": "uuid-string",
+            "name": "Emergency Contact",
+            "phone": "+1234567890",
+            "relationship": "spouse",
+            "is_primary": true,
+            "created_at": "2025-08-04T13:00:00.000000"
+          }
+        ]
+      },
+      {
+        "name": "Remove Family Member",
+        "method": "DELETE",
+        "endpoint": "/family/members/uuid-string-2",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "message": "Member removed from family successfully"
+        }
+      }
+    ],
+    "curl_examples": [
+      {
+        "description": "Create family",
+        "command": "curl -X POST http://localhost:8001/family/create -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\" -H \"Content-Type: application/json\" -d '{\"family_name\": \"Smith Family\"}'"
+      },
+      {
+        "description": "Get invite code",
+        "command": "curl -X GET http://localhost:8001/family/invite-code -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Join family",
+        "command": "curl -X POST http://localhost:8001/family/join -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\" -H \"Content-Type: application/json\" -d '{\"invite_code\": \"ABCD1234\"}'"
+      },
+      {
+        "description": "Get family members",
+        "command": "curl -X GET http://localhost:8001/family/members -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get pending invites",
+        "command": "curl -X GET http://localhost:8001/family/pending-invites -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Accept invite",
+        "command": "curl -X POST http://localhost:8001/family/invites/uuid-string/accept -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Reject invite",
+        "command": "curl -X POST http://localhost:8001/family/invites/uuid-string/reject -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get member health",
+        "command": "curl -X GET http://localhost:8001/family/members/uuid-string-2/health -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get family health dashboard",
+        "command": "curl -X GET http://localhost:8001/family/health-dashboard -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get family health comparison",
+        "command": "curl -X GET http://localhost:8001/family/health-comparison -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Generate health report",
+        "command": "curl -X POST http://localhost:8001/family/health-reports -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\" -H \"Content-Type: application/json\" -d '{\"period\": \"month\", \"include_comparisons\": true}'"
+      },
+      {
+        "description": "Update sharing settings",
+        "command": "curl -X PATCH http://localhost:8001/family/sharing-settings -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\" -H \"Content-Type: application/json\" -d '{\"share_heart_rate\": true, \"share_spo2\": true}'"
+      },
+      {
+        "description": "Add emergency contact",
+        "command": "curl -X POST http://localhost:8001/family/emergency-contacts -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\" -H \"Content-Type: application/json\" -d '{\"name\": \"Emergency Contact\", \"phone\": \"+1234567890\", \"relationship\": \"spouse\"}'"
+      },
+      {
+        "description": "Get emergency contacts",
+        "command": "curl -X GET http://localhost:8001/family/emergency-contacts -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Remove family member",
+        "command": "curl -X DELETE http://localhost:8001/family/members/uuid-string-2 -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      }
+    ]
+  }
+} 

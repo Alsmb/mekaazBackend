@@ -1,0 +1,130 @@
+{
+  "auth_endpoints": {
+    "signup": {
+      "url": "POST /auth/signup",
+      "description": "Register a new user",
+      "test_cases": [
+        {
+          "name": "Patient Signup Success",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/signup",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "patient@example.com",
+            "password": "securepassword123",
+            "name": "John Patient",
+            "role": "patient",
+            "phone_number": "+1234567890",
+            "language": "EN"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "access_token": "string",
+            "refresh_token": "string",
+            "token_type": "bearer"
+          }
+        },
+        {
+          "name": "Family Member Signup Success",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/signup",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "family@example.com",
+            "password": "securepassword123",
+            "name": "Sarah Family",
+            "role": "family_member",
+            "phone_number": "+1234567891",
+            "language": "EN"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Duplicate Email Error",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/signup",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "patient@example.com",
+            "password": "securepassword123",
+            "name": "Duplicate User",
+            "role": "patient"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Email already registered"
+          }
+        }
+      ]
+    },
+    "login": {
+      "url": "POST /auth/login",
+      "description": "Login with email and password",
+      "test_cases": [
+        {
+          "name": "Login Success",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/login",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "patient@example.com",
+            "password": "securepassword123"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "access_token": "string",
+            "refresh_token": "string",
+            "token_type": "bearer"
+          }
+        },
+        {
+          "name": "Invalid Credentials",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/login",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "email": "patient@example.com",
+            "password": "wrongpassword"
+          },
+          "expected_status": 401,
+          "expected_response": {
+            "detail": "Invalid credentials"
+          }
+        }
+      ]
+    },
+    "refresh_token": {
+      "url": "POST /auth/refresh",
+      "description": "Refresh access token",
+      "test_cases": [
+        {
+          "name": "Refresh Token Success",
+          "method": "POST",
+          "url": "http://localhost:8001/auth/refresh",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "refresh_token": "{{refresh_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "access_token": "string",
+            "refresh_token": "string",
+            "token_type": "bearer"
+          }
+        }
+      ]
+    }
+  }
+} 

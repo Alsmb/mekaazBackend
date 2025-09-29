@@ -1,0 +1,383 @@
+{
+  "ecg_endpoints": {
+    "start_ecg_recording": {
+      "url": "POST /ecg/start",
+      "description": "Start a new ECG recording session",
+      "test_cases": [
+        {
+          "name": "Start ECG Recording Success",
+          "method": "POST",
+          "url": "http://localhost:8001/ecg/start",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "device_id": "ecg_device_001",
+            "recording_duration": "30_seconds",
+            "session_type": "single_lead",
+            "lead_count": 1,
+            "sampling_rate": 500,
+            "resolution": 12
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "device_id": "string",
+            "recording_duration": "30_seconds",
+            "status": "recording",
+            "recording_started_at": "string",
+            "recording_completed_at": null,
+            "processing_started_at": null,
+            "processing_completed_at": null,
+            "pdf_url": null,
+            "file_size": null,
+            "created_at": "string"
+          }
+        },
+        {
+          "name": "Start 60-Second ECG Recording",
+          "method": "POST",
+          "url": "http://localhost:8001/ecg/start",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "device_id": "ecg_device_001",
+            "recording_duration": "60_seconds",
+            "session_type": "multi_lead",
+            "lead_count": 3,
+            "sampling_rate": 1000,
+            "resolution": 16
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Device Not Connected Error",
+          "method": "POST",
+          "url": "http://localhost:8001/ecg/start",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "device_id": "unconnected_device",
+            "recording_duration": "30_seconds"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Device not connected or not found"
+          }
+        }
+      ]
+    },
+    "update_ecg_data": {
+      "url": "POST /ecg/{ecg_id}/data",
+      "description": "Update ECG recording with data from device",
+      "test_cases": [
+        {
+          "name": "Update ECG Data Success",
+          "method": "POST",
+          "url": "http://localhost:8001/ecg/{{ecg_id}}/data",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "ecg_id": "{{ecg_id}}",
+            "ecg_data": {
+              "readings": [0.1, 0.2, 0.15, 0.3, 0.25, 0.4, 0.35, 0.5, 0.45, 0.6],
+              "timestamp": "2024-01-01T12:00:00Z",
+              "quality": "good",
+              "signal_strength": 0.8
+            }
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "device_id": "string",
+            "recording_duration": "30_seconds",
+            "status": "recording",
+            "ecg_data": "string",
+            "recording_started_at": "string",
+            "created_at": "string"
+          }
+        },
+        {
+          "name": "ECG Recording Not Found Error",
+          "method": "POST",
+          "url": "http://localhost:8001/ecg/nonexistent_id/data",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "ecg_id": "nonexistent_id",
+            "ecg_data": {
+              "readings": [0.1, 0.2, 0.15]
+            }
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "ECG recording not found"
+          }
+        },
+        {
+          "name": "ECG Recording Not Active Error",
+          "method": "POST",
+          "url": "http://localhost:8001/ecg/{{completed_ecg_id}}/data",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "ecg_id": "{{completed_ecg_id}}",
+            "ecg_data": {
+              "readings": [0.1, 0.2, 0.15]
+            }
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "ECG recording is not active"
+          }
+        }
+      ]
+    },
+    "complete_ecg_recording": {
+      "url": "POST /ecg/{ecg_id}/complete",
+      "description": "Complete ECG recording and start processing",
+      "test_cases": [
+        {
+          "name": "Complete ECG Recording Success",
+          "method": "POST",
+          "url": "http://localhost:8001/ecg/{{ecg_id}}/complete",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "ecg_id": "{{ecg_id}}",
+            "final_data": {
+              "readings": [0.1, 0.2, 0.15, 0.3, 0.25, 0.4, 0.35, 0.5, 0.45, 0.6, 0.55, 0.7, 0.65, 0.8, 0.75, 0.9],
+              "timestamp": "2024-01-01T12:00:30Z",
+              "quality": "excellent",
+              "signal_strength": 0.95,
+              "total_readings": 15000,
+              "duration_seconds": 30
+            }
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "device_id": "string",
+            "recording_duration": "30_seconds",
+            "status": "processing",
+            "ecg_data": "string",
+            "recording_started_at": "string",
+            "recording_completed_at": "string",
+            "processing_started_at": "string",
+            "processing_completed_at": null,
+            "pdf_url": null,
+            "file_size": null,
+            "created_at": "string"
+          }
+        }
+      ]
+    },
+    "get_ecg_recording": {
+      "url": "GET /ecg/{ecg_id}",
+      "description": "Get ECG recording by ID",
+      "test_cases": [
+        {
+          "name": "Get ECG Recording Success",
+          "method": "GET",
+          "url": "http://localhost:8001/ecg/{{ecg_id}}",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "device_id": "string",
+            "recording_duration": "30_seconds",
+            "status": "completed",
+            "recording_started_at": "string",
+            "recording_completed_at": "string",
+            "processing_started_at": "string",
+            "processing_completed_at": "string",
+            "pdf_url": "string",
+            "file_size": 1024000,
+            "created_at": "string"
+          }
+        },
+        {
+          "name": "ECG Recording Not Found Error",
+          "method": "GET",
+          "url": "http://localhost:8001/ecg/nonexistent_id",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "ECG recording not found"
+          }
+        }
+      ]
+    },
+    "get_ecg_history": {
+      "url": "GET /ecg/history",
+      "description": "Get ECG recording history for user",
+      "test_cases": [
+        {
+          "name": "Get ECG History Success",
+          "method": "GET",
+          "url": "http://localhost:8001/ecg/history",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": [
+            {
+              "id": "string",
+              "user_id": "string",
+              "device_id": "string",
+              "recording_duration": "30_seconds",
+              "status": "completed",
+              "recording_started_at": "string",
+              "recording_completed_at": "string",
+              "processing_started_at": "string",
+              "processing_completed_at": "string",
+              "pdf_url": "string",
+              "file_size": 1024000,
+              "created_at": "string"
+            },
+            {
+              "id": "string",
+              "user_id": "string",
+              "device_id": "string",
+              "recording_duration": "60_seconds",
+              "status": "processing",
+              "recording_started_at": "string",
+              "recording_completed_at": "string",
+              "processing_started_at": "string",
+              "processing_completed_at": null,
+              "pdf_url": null,
+              "file_size": null,
+              "created_at": "string"
+            }
+          ]
+        },
+        {
+          "name": "Get ECG History with Limit",
+          "method": "GET",
+          "url": "http://localhost:8001/ecg/history?limit=10",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200
+        }
+      ]
+    },
+    "download_ecg_pdf": {
+      "url": "GET /ecg/{ecg_id}/download",
+      "description": "Get download URL for ECG PDF",
+      "test_cases": [
+        {
+          "name": "Download ECG PDF Success",
+          "method": "GET",
+          "url": "http://localhost:8001/ecg/{{completed_ecg_id}}/download",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "download_url": "data:application/pdf;base64,JVBERi0xLjQKJcOkw7zDtsO...",
+            "expires_at": "string",
+            "file_size": 1024000
+          }
+        },
+        {
+          "name": "ECG Recording Not Completed Error",
+          "method": "GET",
+          "url": "http://localhost:8001/ecg/{{processing_ecg_id}}/download",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "ECG recording not completed"
+          }
+        },
+        {
+          "name": "PDF Not Available Error",
+          "method": "GET",
+          "url": "http://localhost:8001/ecg/{{failed_ecg_id}}/download",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "PDF not available"
+          }
+        }
+      ]
+    },
+    "analyze_ecg_data": {
+      "url": "GET /ecg/{ecg_id}/analyze",
+      "description": "Analyze ECG data and return health metrics",
+      "test_cases": [
+        {
+          "name": "Analyze ECG Data Success",
+          "method": "GET",
+          "url": "http://localhost:8001/ecg/{{completed_ecg_id}}/analyze",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "ecg_id": "string",
+            "heart_rate": 75,
+            "rhythm": "normal",
+            "abnormalities": [],
+            "confidence_score": 0.95,
+            "analysis_completed_at": "string"
+          }
+        },
+        {
+          "name": "Analyze ECG with Abnormalities",
+          "method": "GET",
+          "url": "http://localhost:8001/ecg/{{abnormal_ecg_id}}/analyze",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "ecg_id": "string",
+            "heart_rate": 120,
+            "rhythm": "tachycardia",
+            "abnormalities": ["Tachycardia detected", "Irregular rhythm detected"],
+            "confidence_score": 0.85,
+            "analysis_completed_at": "string"
+          }
+        },
+        {
+          "name": "No ECG Data Available Error",
+          "method": "GET",
+          "url": "http://localhost:8001/ecg/{{empty_ecg_id}}/analyze",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "No ECG data available"
+          }
+        }
+      ]
+    }
+  }
+} 

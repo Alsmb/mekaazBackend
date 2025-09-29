@@ -1,0 +1,224 @@
+{
+  "health_endpoints": {
+    "vitals_ingest": {
+      "url": "POST /vitals/ingest",
+      "description": "Ingest vital data from device",
+      "test_cases": [
+        {
+          "name": "Normal Vital Data",
+          "method": "POST",
+          "url": "http://localhost:8001/vitals/ingest",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "device_id": "heart_monitor_001",
+            "heart_rate": 75,
+            "spo2": 98.5,
+            "temperature": 36.8,
+            "steps": 1000,
+            "blood_pressure_systolic": 120,
+            "blood_pressure_diastolic": 80,
+            "respiratory_rate": 16
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "id": "string",
+            "user_id": "string",
+            "device_id": "string",
+            "heart_rate": 75,
+            "spo2": 98.5,
+            "temperature": 36.8,
+            "steps": 1000,
+            "blood_pressure_systolic": 120,
+            "blood_pressure_diastolic": 80,
+            "respiratory_rate": 16,
+            "health_condition": "normal",
+            "is_anomaly": false,
+            "timestamp": "string"
+          }
+        },
+        {
+          "name": "Anomaly Vital Data",
+          "method": "POST",
+          "url": "http://localhost:8001/vitals/ingest",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "device_id": "heart_monitor_001",
+            "heart_rate": 120,
+            "spo2": 92.0,
+            "temperature": 38.5,
+            "steps": 500,
+            "blood_pressure_systolic": 150,
+            "blood_pressure_diastolic": 95,
+            "respiratory_rate": 25
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "health_condition": "warning",
+            "is_anomaly": true
+          }
+        },
+        {
+          "name": "Device Not Connected Error",
+          "method": "POST",
+          "url": "http://localhost:8001/vitals/ingest",
+          "headers": {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "body": {
+            "device_id": "unconnected_device",
+            "heart_rate": 75,
+            "spo2": 98.5
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Device not connected or not found"
+          }
+        }
+      ]
+    },
+    "vitals_live": {
+      "url": "GET /vitals/live",
+      "description": "Get latest live vital data",
+      "test_cases": [
+        {
+          "name": "Get Live Vitals Success",
+          "method": "GET",
+          "url": "http://localhost:8001/vitals/live",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "heart_rate": 75,
+            "spo2": 98.5,
+            "temperature": 36.8,
+            "steps": 1000,
+            "health_condition": "normal",
+            "is_anomaly": false,
+            "timestamp": "string"
+          }
+        },
+        {
+          "name": "No Live Data Available",
+          "method": "GET",
+          "url": "http://localhost:8001/vitals/live",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 404,
+          "expected_response": {
+            "detail": "No live vital data available"
+          }
+        }
+      ]
+    },
+    "vitals_history": {
+      "url": "GET /vitals/history",
+      "description": "Get vital signs history",
+      "test_cases": [
+        {
+          "name": "Get History Success",
+          "method": "GET",
+          "url": "http://localhost:8001/vitals/history",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": [
+            {
+              "id": "string",
+              "user_id": "string",
+              "device_id": "string",
+              "heart_rate": 75,
+              "spo2": 98.5,
+              "temperature": 36.8,
+              "steps": 1000,
+              "health_condition": "normal",
+              "is_anomaly": false,
+              "timestamp": "string"
+            }
+          ]
+        },
+        {
+          "name": "Get History with Time Filter",
+          "method": "GET",
+          "url": "http://localhost:8001/vitals/history?start_time=2024-01-01T00:00:00&end_time=2024-01-02T00:00:00&limit=50",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200
+        }
+      ]
+    },
+    "vitals_charts": {
+      "url": "GET /vitals/charts/{period}",
+      "description": "Get aggregated chart data",
+      "test_cases": [
+        {
+          "name": "Get Hour Chart Data",
+          "method": "GET",
+          "url": "http://localhost:8001/vitals/charts/hour",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200,
+          "expected_response": {
+            "period": "hour",
+            "data": [
+              {
+                "heart_rate_avg": 75.5,
+                "heart_rate_min": 70,
+                "heart_rate_max": 80,
+                "spo2_avg": 98.2,
+                "spo2_min": 97.0,
+                "spo2_max": 99.0,
+                "temperature_avg": 36.8,
+                "steps_total": 1000,
+                "anomaly_count": 0,
+                "start_time": "string",
+                "end_time": "string"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Day Chart Data",
+          "method": "GET",
+          "url": "http://localhost:8001/vitals/charts/day",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Get Week Chart Data",
+          "method": "GET",
+          "url": "http://localhost:8001/vitals/charts/week",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 200
+        },
+        {
+          "name": "Invalid Period Error",
+          "method": "GET",
+          "url": "http://localhost:8001/vitals/charts/month",
+          "headers": {
+            "Authorization": "Bearer {{access_token}}"
+          },
+          "expected_status": 400,
+          "expected_response": {
+            "detail": "Invalid period. Use: hour, day, or week"
+          }
+        }
+      ]
+    }
+  }
+} 

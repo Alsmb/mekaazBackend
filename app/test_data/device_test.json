@@ -1,0 +1,314 @@
+{
+  "device_test": {
+    "description": "Test all device management endpoints for the HealthMon app",
+    "base_url": "http://localhost:8001",
+    "auth_token": "YOUR_ACCESS_TOKEN_HERE",
+    "tests": [
+      {
+        "name": "Discover Bluetooth Devices",
+        "method": "GET",
+        "endpoint": "/devices/discover",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": [
+          {
+            "device_id": "Mekaaz-1001",
+            "device_name": "Mekaaz-1001",
+            "device_type": "heart_monitor",
+            "signal_strength": 88,
+            "battery_level": 85,
+            "is_available": true
+          },
+          {
+            "device_id": "Mekaaz-1002",
+            "device_name": "Mekaaz-1002",
+            "device_type": "ecg_device",
+            "signal_strength": 72,
+            "battery_level": 92,
+            "is_available": true
+          },
+          {
+            "device_id": "Mekaaz-1003",
+            "device_name": "Mekaaz-1003",
+            "device_type": "heart_monitor",
+            "signal_strength": 90,
+            "battery_level": 78,
+            "is_available": true
+          }
+        ]
+      },
+      {
+        "name": "Connect Device",
+        "method": "POST",
+        "endpoint": "/devices/connect",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "device_id": "Mekaaz-1001",
+          "device_type": "heart_monitor",
+          "device_name": "My Heart Monitor"
+        },
+        "expected_response": {
+          "id": "uuid-string",
+          "user_id": "uuid-string",
+          "device_type": "heart_monitor",
+          "device_id": "Mekaaz-1001",
+          "device_name": "My Heart Monitor",
+          "is_connected": true,
+          "last_connected": "2025-08-04T13:00:00.000000",
+          "created_at": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Get Available Devices",
+        "method": "GET",
+        "endpoint": "/devices/available",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": [
+          {
+            "id": "uuid-string",
+            "user_id": "uuid-string",
+            "device_type": "heart_monitor",
+            "device_id": "Mekaaz-1001",
+            "device_name": "My Heart Monitor",
+            "is_connected": true,
+            "last_connected": "2025-08-04T13:00:00.000000",
+            "created_at": "2025-08-04T13:00:00.000000"
+          }
+        ]
+      },
+      {
+        "name": "Get Device Status",
+        "method": "GET",
+        "endpoint": "/devices/Mekaaz-1001/status",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "id": "uuid-string",
+          "user_id": "uuid-string",
+          "device_type": "heart_monitor",
+          "device_id": "Mekaaz-1001",
+          "device_name": "My Heart Monitor",
+          "is_connected": true,
+          "last_connected": "2025-08-04T13:00:00.000000",
+          "created_at": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Get Device Signal Strength",
+        "method": "GET",
+        "endpoint": "/devices/Mekaaz-1001/signal-strength",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "device_id": "Mekaaz-1001",
+          "signal_strength": 88,
+          "signal_quality": "Good",
+          "timestamp": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Get Device Battery Level",
+        "method": "GET",
+        "endpoint": "/devices/Mekaaz-1001/battery",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "device_id": "Mekaaz-1001",
+          "battery_level": 85,
+          "battery_status": "Good",
+          "timestamp": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Pair Bluetooth Device",
+        "method": "POST",
+        "endpoint": "/devices/Mekaaz-1002/pair",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "message": "Device paired successfully",
+          "device": {
+            "id": "uuid-string",
+            "user_id": "uuid-string",
+            "device_type": "ecg_device",
+            "device_id": "Mekaaz-1002",
+            "device_name": "Mekaaz-1002",
+            "is_connected": true,
+            "last_connected": "2025-08-04T13:00:00.000000",
+            "created_at": "2025-08-04T13:00:00.000000"
+          },
+          "signal_strength": 72,
+          "battery_level": 92
+        }
+      },
+      {
+        "name": "Get Device Firmware",
+        "method": "GET",
+        "endpoint": "/devices/Mekaaz-1001/firmware",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "device_id": "Mekaaz-1001",
+          "current_version": "1.2.3",
+          "latest_version": "1.2.4",
+          "update_available": true,
+          "last_check": "2025-08-04T13:00:00.000000",
+          "firmware_size": "2.5 MB",
+          "update_notes": "Bug fixes and performance improvements"
+        }
+      },
+      {
+        "name": "Update Device Firmware",
+        "method": "POST",
+        "endpoint": "/devices/Mekaaz-1001/update",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "version": "1.2.4",
+          "auto_restart": true
+        },
+        "expected_response": {
+          "message": "Firmware update initiated successfully",
+          "device_id": "Mekaaz-1001",
+          "update_status": "in_progress",
+          "estimated_time": "5 minutes",
+          "progress": 0,
+          "update_id": "uuid-string"
+        }
+      },
+      {
+        "name": "Get Device Calibration",
+        "method": "GET",
+        "endpoint": "/devices/Mekaaz-1001/calibration",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "device_id": "Mekaaz-1001",
+          "calibration_status": "calibrated",
+          "last_calibration": "2025-07-05T13:00:00.000000",
+          "next_calibration_due": "2025-09-04T13:00:00.000000",
+          "calibration_accuracy": 98.5,
+          "sensors": {
+            "heart_rate": {
+              "status": "calibrated",
+              "accuracy": 99.2
+            },
+            "spo2": {
+              "status": "calibrated",
+              "accuracy": 97.8
+            },
+            "temperature": {
+              "status": "calibrated",
+              "accuracy": 98.1
+            }
+          }
+        }
+      },
+      {
+        "name": "Calibrate Device",
+        "method": "POST",
+        "endpoint": "/devices/Mekaaz-1001/calibrate",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "sensors": ["heart_rate", "spo2", "temperature"],
+          "calibration_type": "automatic"
+        },
+        "expected_response": {
+          "message": "Device calibration completed successfully",
+          "device_id": "Mekaaz-1001",
+          "calibration_status": "calibrated",
+          "calibration_timestamp": "2025-08-04T13:00:00.000000",
+          "calibration_accuracy": 98.5,
+          "calibrated_sensors": ["heart_rate", "spo2", "temperature"]
+        }
+      },
+      {
+        "name": "Disconnect Device",
+        "method": "DELETE",
+        "endpoint": "/devices/Mekaaz-1001",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "message": "Device disconnected successfully"
+        }
+      }
+    ],
+    "curl_examples": [
+      {
+        "description": "Discover Bluetooth devices",
+        "command": "curl -X GET http://localhost:8001/devices/discover -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Connect device",
+        "command": "curl -X POST http://localhost:8001/devices/connect -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\" -H \"Content-Type: application/json\" -d '{\"device_id\": \"Mekaaz-1001\", \"device_type\": \"heart_monitor\", \"device_name\": \"My Heart Monitor\"}'"
+      },
+      {
+        "description": "Get available devices",
+        "command": "curl -X GET http://localhost:8001/devices/available -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get device status",
+        "command": "curl -X GET http://localhost:8001/devices/Mekaaz-1001/status -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get signal strength",
+        "command": "curl -X GET http://localhost:8001/devices/Mekaaz-1001/signal-strength -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get battery level",
+        "command": "curl -X GET http://localhost:8001/devices/Mekaaz-1001/battery -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Pair device",
+        "command": "curl -X POST http://localhost:8001/devices/Mekaaz-1002/pair -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get firmware info",
+        "command": "curl -X GET http://localhost:8001/devices/Mekaaz-1001/firmware -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Update firmware",
+        "command": "curl -X POST http://localhost:8001/devices/Mekaaz-1001/update -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\" -H \"Content-Type: application/json\" -d '{\"version\": \"1.2.4\", \"auto_restart\": true}'"
+      },
+      {
+        "description": "Get calibration status",
+        "command": "curl -X GET http://localhost:8001/devices/Mekaaz-1001/calibration -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Calibrate device",
+        "command": "curl -X POST http://localhost:8001/devices/Mekaaz-1001/calibrate -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\" -H \"Content-Type: application/json\" -d '{\"sensors\": [\"heart_rate\", \"spo2\", \"temperature\"], \"calibration_type\": \"automatic\"}'"
+      },
+      {
+        "description": "Disconnect device",
+        "command": "curl -X DELETE http://localhost:8001/devices/Mekaaz-1001 -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      }
+    ]
+  }
+} 

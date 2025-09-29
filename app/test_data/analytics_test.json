@@ -1,0 +1,192 @@
+{
+  "analytics_test": {
+    "description": "Test all analytics endpoints for health insights and anomaly detection",
+    "base_url": "http://localhost:8001",
+    "auth_token": "YOUR_ACCESS_TOKEN_HERE",
+    "tests": [
+      {
+        "name": "Get Health Insights",
+        "method": "GET",
+        "endpoint": "/analytics/health-insights",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "insights": [
+            {
+              "type": "heart_rate_high",
+              "title": "Elevated Heart Rate",
+              "message": "Your average heart rate is 105.2 bpm, which is above normal range",
+              "severity": "warning"
+            }
+          ],
+          "recommendations": [
+            "Consider reducing stress and increasing physical activity",
+            "Monitor your heart rate regularly"
+          ],
+          "health_score": 85,
+          "analysis_period": "Last 100 readings",
+          "timestamp": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Detect Anomalies",
+        "method": "GET",
+        "endpoint": "/analytics/anomaly-detection",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "anomalies": [
+            {
+              "type": "heart_rate_anomaly",
+              "title": "Critical Heart Rate",
+              "message": "Heart rate spike detected: 125 bpm",
+              "value": 125,
+              "timestamp": "2025-08-04T12:30:00.000000",
+              "severity": "critical"
+            }
+          ],
+          "total_anomalies": 1,
+          "critical_count": 1,
+          "warning_count": 0,
+          "detection_timestamp": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Create Custom Alert",
+        "method": "POST",
+        "endpoint": "/analytics/custom-alerts",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "alert_type": "heart_rate",
+          "threshold": 110,
+          "condition": "above",
+          "notification_enabled": true,
+          "description": "Alert when heart rate goes above 110 bpm"
+        },
+        "expected_response": {
+          "message": "Custom alert created successfully",
+          "alert_id": "uuid-string",
+          "config": {
+            "alert_type": "heart_rate",
+            "threshold": 110,
+            "condition": "above",
+            "notification_enabled": true,
+            "description": "Alert when heart rate goes above 110 bpm"
+          },
+          "created_at": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Analyze Health Patterns",
+        "method": "GET",
+        "endpoint": "/analytics/health-patterns",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "patterns": {
+            "heart_rate_pattern": "stable",
+            "spo2_pattern": "stable",
+            "temperature_pattern": "stable",
+            "activity_pattern": "increasing",
+            "sleep_pattern": "stable"
+          },
+          "analysis_period": "Last 30 days",
+          "data_points": 150,
+          "timestamp": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Get Predictive Health",
+        "method": "GET",
+        "endpoint": "/analytics/predictive-health",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "predictions": {
+            "heart_health_risk": "low",
+            "respiratory_health_risk": "low",
+            "activity_trend": "improving",
+            "sleep_quality_trend": "stable"
+          },
+          "confidence_scores": {
+            "heart_health": 0.85,
+            "respiratory_health": 0.92,
+            "activity": 0.78,
+            "sleep": 0.81
+          },
+          "recommendations": [
+            "Continue current exercise routine",
+            "Maintain good sleep hygiene",
+            "Monitor stress levels"
+          ],
+          "prediction_timestamp": "2025-08-04T13:00:00.000000"
+        }
+      },
+      {
+        "name": "Compare Health Data",
+        "method": "GET",
+        "endpoint": "/analytics/health-comparison?period=week",
+        "headers": {
+          "Authorization": "Bearer YOUR_ACCESS_TOKEN_HERE",
+          "Content-Type": "application/json"
+        },
+        "expected_response": {
+          "comparison_period": "week",
+          "metrics": {
+            "heart_rate": {
+              "current": 75.2,
+              "previous": 78.1,
+              "change": -2.9,
+              "trend": "improving"
+            },
+            "spo2": {
+              "current": 98.5,
+              "previous": 97.8,
+              "change": 0.7,
+              "trend": "improving"
+            }
+          },
+          "summary": "Your health metrics are generally stable",
+          "timestamp": "2025-08-04T13:00:00.000000"
+        }
+      }
+    ],
+    "curl_examples": [
+      {
+        "description": "Get health insights",
+        "command": "curl -X GET http://localhost:8001/analytics/health-insights -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Detect anomalies",
+        "command": "curl -X GET http://localhost:8001/analytics/anomaly-detection -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Create custom alert",
+        "command": "curl -X POST http://localhost:8001/analytics/custom-alerts -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\" -H \"Content-Type: application/json\" -d '{\"alert_type\": \"heart_rate\", \"threshold\": 110, \"condition\": \"above\"}'"
+      },
+      {
+        "description": "Analyze health patterns",
+        "command": "curl -X GET http://localhost:8001/analytics/health-patterns -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Get predictive health",
+        "command": "curl -X GET http://localhost:8001/analytics/predictive-health -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      },
+      {
+        "description": "Compare health data",
+        "command": "curl -X GET \"http://localhost:8001/analytics/health-comparison?period=week\" -H \"Authorization: Bearer YOUR_ACCESS_TOKEN_HERE\""
+      }
+    ]
+  }
+} 
