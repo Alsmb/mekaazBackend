@@ -149,8 +149,20 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
 
+
       - name: Run Ansible deploy
         env:
           DOCKER_IMAGE: ${{ needs.build_push.outputs.image }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
-          ansible-playbook ansible/playbook.yml -i ansible/inventory.ini --private-key=/tmp/deploy_key -e "docker_image=${DOCKER_IMAGE}" -e "db_host=${{ secrets.DB_HOST }}" -e "db_name=${{ secrets.DB_NAME }}" -e "db_user=${{ secrets.DB_USER }}" -e "db_password=${{ secrets.DB_PASSWORD }
+          ansible-playbook ansible/playbook.yml \
+          -i ansible/inventory.ini \
+          --private-key=/tmp/deploy_key \
+          -e "docker_image=${DOCKER_IMAGE}" \
+          -e "db_host=${DB_HOST}" \
+          -e "db_name=${DB_NAME}" \
+          -e "db_user=${DB_USER}" \
+          -e "db_password=${DB_PASSWORD}"  
