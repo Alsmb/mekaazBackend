@@ -15,4 +15,4 @@ numpy==1.24.3
 reportlab==4.0.7
 pytest==7.4.3
 httpx==0.25.2
-request
+requests==2.31.0
