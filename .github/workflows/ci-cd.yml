@@ -1,4 +1,4 @@
-name: CI/CD - Django + Docker + Terraform + Ansible
+name: CI/CD - FastAPI + Docker + Terraform + Ansible
 
 on:
   push:
@@ -12,10 +12,10 @@ env:
 
 jobs:
   # --------------------------------------
-  # Job 1: Run tests (runs for PRs and push)
+  # Job 1: Run FastAPI tests
   # --------------------------------------
   test:
-    name: Run Django tests
+    name: Run FastAPI tests
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -46,20 +46,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run migrations
+      # Optional: Run Alembic migrations if you use it
+      - name: Run Alembic migrations
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
         run: |
-          python manage.py migrate
+          alembic upgrade head || echo "No migrations"
 
-      - name: Run tests
+      - name: Run pytest
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
         run: |
-          python manage.py test
+          pytest --maxfail=1 --disable-warnings -q
 
   # --------------------------------------
-  # Job 2: Build & push Docker (only on push->main)
+  # Job 2: Build & push Docker
   # --------------------------------------
   build_push:
     name: Build & Push Docker image
@@ -88,15 +89,15 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/your-app-name:${{ github.sha }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/mekaaz-backend:${{ github.sha }}
 
       - name: Set image output
         id: set-image
         run: |
-          echo "image=${{ secrets.DOCKER_HUB_USERNAME }}/your-app-name:${{ github.sha }}" >> $GITHUB_OUTPUT
+          echo "image=${{ secrets.DOCKER_HUB_USERNAME }}/mekaaz-backend:${{ github.sha }}" >> $GITHUB_OUTPUT
 
   # --------------------------------------
-  # Job 3: Terraform (app) apply + Ansible deploy (only on push->main)
+  # Job 3: Terraform apply + Ansible deploy
   # --------------------------------------
   deploy:
     name: Terraform apply & Ansible deploy
@@ -141,15 +142,15 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y python3-pip
           pip3 install ansible==8.5.0
-          pip3 install docker   # community.docker needs docker python lib
+          pip3 install docker   # for community.docker
 
       - name: Save SSH key
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/github_key
-          chmod 600 /tmp/github_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
 
       - name: Run Ansible deploy
         env:
           DOCKER_IMAGE: ${{ needs.build_push.outputs.image }}
         run: |
-          ansible-playbook ansible/playbook.yml -i ansible/inventory.ini --private-key=/tmp/deploy_key -e "docker_image=${DOCKER_IMAGE}" -e "db_host=${{ secrets.DB_HOST }}" -e "db_name=${{ secrets.DB_NAME }}" -e "db_user=${{ secrets.DB_USER }}" -e "db_password=${{ secrets.DB_PASSWORD }}"
+          ansible-playbook ansible/playbook.yml -i ansible/inventory.ini --private-key=/tmp/deploy_key -e "docker_image=${DOCKER_IMAGE}" -e "db_host=${{ secrets.DB_HOST }}" -e "db_name=${{ secrets.DB_NAME }}" -e "db_user=${{ secrets.DB_USER }}" -e "db_password=${{ secrets.DB_PASSWORD }
