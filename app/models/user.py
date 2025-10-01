@@ -17,7 +17,7 @@ class UserRole(str, enum.Enum):
 class User(Base):
     __tablename__ = "users"
     # Use String for development with SQLite
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False)
     phone_number = Column(String, unique=True)
     hashed_password = Column(String, nullable=False)
