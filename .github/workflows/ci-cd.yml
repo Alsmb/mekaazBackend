@@ -74,7 +74,7 @@ jobs:
 
       - name: Run pytest
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
         run: |
           pytest --maxfail=1 --disable-warnings -q
 
