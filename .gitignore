@@ -28,3 +28,10 @@ build/
 # Docker
 *.tar
 EOL
+
+# Virtual environment
+venv/
+.env
+
+# SQLite test DB
+*.db

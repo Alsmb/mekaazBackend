@@ -252,25 +252,26 @@ Tests all major endpoints and functionality
 
 
 
-import requests
+from fastapi.testclient import TestClient
+from app.main import app
 
-BASE_URL = "http://localhost:8000"
+client = TestClient(app)
 
 
 def test_health_check():
-    response = requests.get(f"{BASE_URL}/health")
+    response = client.get("/health")
     assert response.status_code == 200
     assert response.json().get("status") == "ok" or response.json() != {}
 
 
 def test_api_docs():
-    response = requests.get(f"{BASE_URL}/docs")
+    response = client.get("/docs")
     assert response.status_code == 200
 
 
 def test_user_profile(access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"{BASE_URL}/user/me", headers=headers)
+    response = client.get("/user/me", headers=headers)
     assert response.status_code == 200
     result = response.json()
     assert "email" in result
@@ -279,7 +280,7 @@ def test_user_profile(access_token):
 
 def test_home_kpi(access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"{BASE_URL}/home/kpi", headers=headers)
+    response = client.get("/home/kpi", headers=headers)
     assert response.status_code == 200
     result = response.json()
     assert isinstance(result, dict)
@@ -287,7 +288,7 @@ def test_home_kpi(access_token):
 
 def test_vitals_live(access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"{BASE_URL}/vitals/live", headers=headers)
+    response = client.get("/vitals/live", headers=headers)
     assert response.status_code == 200
     result = response.json()
     # Expected: may return "No live vital data available"
@@ -296,7 +297,7 @@ def test_vitals_live(access_token):
 
 def test_devices_available(access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"{BASE_URL}/devices/available", headers=headers)
+    response = client.get("/devices/available", headers=headers)
     assert response.status_code == 200
     result = response.json()
     assert isinstance(result, list) or isinstance(result, dict)
@@ -304,7 +305,7 @@ def test_devices_available(access_token):
 
 def test_family_members(access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"{BASE_URL}/family/members", headers=headers)
+    response = client.get("/family/members", headers=headers)
     assert response.status_code == 200
     result = response.json()
     assert isinstance(result, list)
@@ -312,7 +313,7 @@ def test_family_members(access_token):
 
 def test_analytics_health_insights(access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"{BASE_URL}/analytics/health-insights", headers=headers)
+    response = client.get("/analytics/health-insights", headers=headers)
     assert response.status_code == 200
     result = response.json()
     assert isinstance(result, dict)
@@ -320,7 +321,7 @@ def test_analytics_health_insights(access_token):
 
 def test_notifications(access_token):
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(f"{BASE_URL}/notifications", headers=headers)
+    response = client.get("/notifications", headers=headers)
     assert response.status_code == 200
     result = response.json()
     assert isinstance(result, list) or isinstance(result, dict)
