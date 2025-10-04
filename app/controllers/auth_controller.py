@@ -22,7 +22,7 @@ class AuthController:
         # Create user
         hashed_pw = get_password_hash(data.password)
         user = User(
-            id=str(uuid.uuid4()),
+            
             email=data.email,
             phone_number=data.phone_number,
             hashed_password=hashed_pw,
@@ -34,6 +34,9 @@ class AuthController:
         db.add(user)
         db.commit()
         db.refresh(user)
+
+
+        
         
         # Create tokens
         access_token = create_access_token({"sub": str(user.id)})
