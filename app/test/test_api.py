@@ -259,9 +259,9 @@ def user_and_token(test_client):
         "email": "userapi@example.com",
         "password": "pass123",
         "name": "User API",
-        "role": UserRole.PATIENT,
+        "role": UserRole.PATIENT.value,
         "phone_number": "+1234567895",
-        "language": LanguageEnum.EN
+        "language": LanguageEnum.EN.value
     }
     resp = test_client.post("/auth/signup", json=data)
     assert resp.status_code == 200
