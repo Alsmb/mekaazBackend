@@ -22,9 +22,9 @@ def family_member_token(test_client):
         "email": "member@example.com",
         "password": "securepassword123",
         "name": "Member",
-        "role": UserRole.PATIENT,
+        "role": UserRole.PATIENT.value,
         "phone_number": "+2222222222",
-        "language": LanguageEnum.EN
+        "language": LanguageEnum.EN.value
     }
     response = test_client.post("/auth/signup", json=data)
     assert response.status_code == 200
