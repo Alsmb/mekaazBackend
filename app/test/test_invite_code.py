@@ -8,9 +8,9 @@ def family_owner_token(test_client):
         "email": "owner@example.com",
         "password": "securepassword123",
         "name": "Owner",
-        "role": UserRole.PATIENT,
+        "role": UserRole.PATIENT.value,
         "phone_number": "+1111111111",
-        "language": LanguageEnum.EN
+        "language": LanguageEnum.EN.value
     }
     response = test_client.post("/auth/signup", json=data)
     assert response.status_code == 200
