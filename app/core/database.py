@@ -4,16 +4,19 @@ from app.core.config import settings
 
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 
-# Configure engine based on database type
-if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
+# Detect database type
+is_sqlite = SQLALCHEMY_DATABASE_URL.startswith("sqlite")
+
+# Configure engine
+if is_sqlite:
     engine = create_engine(
         SQLALCHEMY_DATABASE_URL,
         connect_args={"check_same_thread": False},
-        # Enable foreign key support for SQLite
         pool_pre_ping=True
     )
 else:
-    engine = create_engine(SQLALCHEMY_DATABASE_URL)
+    engine = create_engine(SQLALCHEMY_DATABASE_URL, pool_pre_ping=True)
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -22,4 +25,4 @@ def get_db():
     try:
         yield db
     finally:
-        db.close() 
+        db.close()

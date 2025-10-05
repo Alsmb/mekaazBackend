@@ -1,13 +1,14 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import UUID
+from app.core.custom_types import GUID
 from app.core.database import Base
 import uuid
 from datetime import datetime
 
 class EmergencyContact(Base):
     __tablename__ = "emergency_contacts"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
+    user_id = Column(GUID(), ForeignKey("users.id"))
     name = Column(String, nullable=False)
     phone = Column(String, nullable=False)
     relationship = Column(String)  # "spouse", "parent", "child", etc.

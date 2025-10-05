@@ -1,14 +1,15 @@
+# file: app/models/vitals.py
 from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey, String, Text, Boolean
-from sqlalchemy.dialects.postgresql import UUID
+from app.core.custom_types import GUID
 from app.core.database import Base
 import uuid
 from datetime import datetime
 
 class Vital(Base):
     __tablename__ = "vitals"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
-    device_id = Column(UUID(as_uuid=True), ForeignKey("devices.id"))
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
+    user_id = Column(GUID(), ForeignKey("users.id"))
+    device_id = Column(GUID(), ForeignKey("devices.id"))
     heart_rate = Column(Integer)
     spo2 = Column(Float)
     temperature = Column(Float)
@@ -16,15 +17,14 @@ class Vital(Base):
     blood_pressure_systolic = Column(Integer)
     blood_pressure_diastolic = Column(Integer)
     respiratory_rate = Column(Integer)
-    health_condition = Column(String)  # "normal", "warning", "critical"
+    health_condition = Column(String)
     is_anomaly = Column(Boolean, default=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
     def to_dict(self):
-        """Convert Vital model to dictionary with string UUIDs"""
         return {
             "id": str(self.id),
-            "user_id": str(self.user_id),
+            "user_id": str(self.user_id) if self.user_id else None,
             "device_id": str(self.device_id) if self.device_id else None,
             "heart_rate": self.heart_rate,
             "spo2": self.spo2,
@@ -41,8 +41,8 @@ class Vital(Base):
 class VitalAggregate(Base):
     __tablename__ = "vital_aggregates"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
-    aggregate_type = Column(String)  # "hour", "day", "week"
+    user_id = Column(GUID(), ForeignKey("users.id"))
+    aggregate_type = Column(String)
     heart_rate_avg = Column(Float)
     heart_rate_min = Column(Integer)
     heart_rate_max = Column(Integer)
@@ -59,7 +59,6 @@ class VitalAggregate(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     def to_dict(self):
-        """Convert VitalAggregate model to dictionary with integer ID"""
         return {
             "id": self.id,
             "user_id": str(self.user_id),
@@ -78,4 +77,4 @@ class VitalAggregate(Base):
             "start_time": self.start_time,
             "end_time": self.end_time,
             "created_at": self.created_at
-        } 
+        }

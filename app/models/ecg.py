@@ -1,27 +1,28 @@
-from sqlalchemy import Column, String, ForeignKey, DateTime, Text, Integer, Float
-from sqlalchemy.dialects.postgresql import UUID
+# file: app/models/ecg.py
+from sqlalchemy import Column, String, ForeignKey, DateTime, Text, Integer
+from app.core.custom_types import GUID
 from app.core.database import Base
 import uuid
 from datetime import datetime
 
 class ECG(Base):
     __tablename__ = "ecgs"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
-    device_id = Column(UUID(as_uuid=True), ForeignKey("devices.id"))
-    recording_duration = Column(String, default="30_seconds")  # "30_seconds", "60_seconds"
-    ecg_data = Column(Text)  # JSON string of ECG readings
-    pdf_url = Column(String)  # S3/Supabase URL for generated PDF
-    status = Column(String, default="recording")  # "recording", "processing", "completed", "failed"
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
+    user_id = Column(GUID(), ForeignKey("users.id"))
+    device_id = Column(GUID(), ForeignKey("devices.id"))
+    recording_duration = Column(String, default="30_seconds")
+    ecg_data = Column(Text)
+    pdf_url = Column(String)
+    status = Column(String, default="recording")
     recording_started_at = Column(DateTime, default=datetime.utcnow)
     recording_completed_at = Column(DateTime)
     processing_started_at = Column(DateTime)
     processing_completed_at = Column(DateTime)
-    file_size = Column(Integer)  # PDF file size in bytes
+    file_size = Column(Integer)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     def to_dict(self):
-        """Convert ECG model to dictionary with string UUIDs"""
+
         return {
             "id": str(self.id),
             "user_id": str(self.user_id),
@@ -40,16 +41,16 @@ class ECG(Base):
 
 class ECGSession(Base):
     __tablename__ = "ecg_sessions"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    ecg_id = Column(UUID(as_uuid=True), ForeignKey("ecgs.id"))
-    session_type = Column(String)  # "single_lead", "multi_lead"
+    id = Column(GUID(), primary_key=True, default=uuid.uuid4)
+    ecg_id = Column(GUID(), ForeignKey("ecgs.id"))
+    session_type = Column(String)
     lead_count = Column(Integer, default=1)
-    sampling_rate = Column(Integer, default=500)  # Hz
-    resolution = Column(Integer, default=12)  # bits
+    sampling_rate = Column(Integer, default=500)
+    resolution = Column(Integer, default=12)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     def to_dict(self):
-        """Convert ECGSession model to dictionary with string UUIDs"""
+        
         return {
             "id": str(self.id),
             "ecg_id": str(self.ecg_id),
@@ -58,4 +59,4 @@ class ECGSession(Base):
             "sampling_rate": self.sampling_rate,
             "resolution": self.resolution,
             "created_at": self.created_at
-        } 
+        }
