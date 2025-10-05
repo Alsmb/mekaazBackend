@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict,Union,Any
 from datetime import datetime
 
 class VitalResponse(BaseModel):
@@ -19,8 +19,8 @@ class VitalResponse(BaseModel):
 
 class VitalIngestRequest(BaseModel):
     device_id: str
-    heart_rate: Optional[int] = None
-    spo2: Optional[float] = None
+    heart_rate: int
+    spo2: Union[int, float]
     temperature: Optional[float] = None
     steps: Optional[int] = None
     blood_pressure_systolic: Optional[int] = None
