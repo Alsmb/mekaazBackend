@@ -25,9 +25,9 @@ def test_login_success(test_client):
         "email": email,
         "password": password,
         "name": "Login Test User",
-        "role": UserRole.PATIENT,
+        "role": UserRole.PATIENT.value,
         "phone_number": "+1234567899",
-        "language": LanguageEnum.EN
+        "language": LanguageEnum.EN.value
     }
     test_client.post("/auth/signup", json=signup_data)
 
